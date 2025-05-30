@@ -634,10 +634,4 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('.header-actions').classList.toggle('active');
         });
     }
-    
-undefined
-    
-
-    
-
 });
