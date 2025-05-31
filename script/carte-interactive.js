@@ -183,7 +183,18 @@ function loadPOIs() {
                 <div class="popup-image">
                     <img src="${feature.properties.photo}" alt="${feature.properties.nom}" class="popup-thumbnail" 
                          data-full-img="${feature.properties.photo}" 
-                         data-photo2="${feature.properties.photo2 || ''}">
+                         data-photo2="${feature.properties.photo2 || ''}"
+                         data-photo3="${feature.properties.photo3 || ''}"
+                         data-photo4="${feature.properties.photo4 || ''}"
+                         data-photo5="${feature.properties.photo5 || ''}"
+                         data-photo6="${feature.properties.photo6 || ''}"
+                         data-photo7="${feature.properties.photo7 || ''}"
+                         data-photo8="${feature.properties.photo8 || ''}"
+                         data-photo9="${feature.properties.photo9 || ''}"
+                         data-photo10="${feature.properties.photo10 || ''}"
+                         data-photo11="${feature.properties.photo11 || ''}"
+                         data-photo12="${feature.properties.photo12 || ''}"
+                         data-photo13="${feature.properties.photo13 || ''}">
                 </div>
             `;
         } else {
@@ -220,10 +231,11 @@ function loadPOIs() {
         
         // Liaison de la popup au marqueur
         marker.bindPopup(popupContent, {
-            maxWidth: 300,
-            minWidth: 200,
+            maxWidth: window.innerWidth > 768 ? 300 : 250,
+            minWidth: window.innerWidth > 768 ? 200 : 150,
             closeOnClick: true,
-            autoClose: true
+            autoClose: true,
+            autoPanPadding: [10, 10]
         });
         
         
@@ -578,42 +590,59 @@ function setupImageModal() {
         e.stopPropagation();
         if (slideImages.length <= 1) return;
         
-        // Basculer entre les deux images (0 et 1)
-        currentSlideIndex = currentSlideIndex === 1 ? 0 : 0;
+        // Basculer entre les images
+        currentSlideIndex = (currentSlideIndex === 0) ? (slideImages.length - 1) : (currentSlideIndex - 1);
         modalImg.src = slideImages[currentSlideIndex];
-        slideCounter.textContent = `1/${slideImages.length}`;
+        slideCounter.textContent = `${currentSlideIndex + 1}/${slideImages.length}`;
     });
     
     nextButton.addEventListener('click', function(e) {
         e.stopPropagation();
         if (slideImages.length <= 1) return;
         
-        // Basculer entre les deux images (0 et 1)
-        currentSlideIndex = currentSlideIndex === 0 ? 1 : 1;
+        // Basculer entre les images
+        currentSlideIndex = (currentSlideIndex === slideImages.length - 1) ? 0 : (currentSlideIndex + 1);
         modalImg.src = slideImages[currentSlideIndex];
-        slideCounter.textContent = `2/${slideImages.length}`;
+        slideCounter.textContent = `${currentSlideIndex + 1}/${slideImages.length}`;
     });
     
     // Délégation d'événements pour les images dans les popups
     document.addEventListener('click', function(event) {
         if (event.target && event.target.classList.contains('popup-thumbnail')) {
             const img1 = event.target.getAttribute('data-full-img');
-            const img2 = event.target.getAttribute('data-photo2');
-            
             slideImages = [img1];
-            if (img2 && img2 !== '') {
-                slideImages.push(img2);
+            
+            // Ajouter toutes les photos supplémentaires si elles existent
+            for (let i = 2; i <= 13; i++) {
+                const img = event.target.getAttribute(`data-photo${i}`);
+                if (img && img !== '' && img !== 'null') {
+                    slideImages.push(img);
+                }
             }
             
             currentSlideIndex = 0;
             modalImg.src = slideImages[0];
             modal.style.display = 'flex';
             
+            // Afficher les contrôles du diaporama uniquement s'il y a plus d'une image
             if (slideImages.length > 1) {
                 slideshowControls.style.display = 'flex';
                 slideCounter.textContent = `1/${slideImages.length}`;
             } else {
                 slideshowControls.style.display = 'none';
+            }
+        }
+    });
+    
+    // Ajouter la navigation par clavier
+    document.addEventListener('keydown', function(e) {
+        if (modal.style.display === 'flex') {
+            if (e.key === 'ArrowLeft') {
+                prevButton.click();
+            } else if (e.key === 'ArrowRight') {
+                nextButton.click();
+            } else if (e.key === 'Escape') {
+                modal.style.display = 'none';
             }
         }
     });
